@@ -263,7 +263,7 @@ describe('Test the receipt prcessing endpoint', () => {
   });
 
   // according to the rules, the total should contain only 2 decimal places
-  test('Rejects receipt without invalid total', async () => {
+  test('Rejects receipt without valid total', async () => {
     const receiptData = {
       retailer: "Target",
       purchaseDate: "2022-05-15",
@@ -298,7 +298,28 @@ describe('Test the receipt prcessing endpoint', () => {
           price: "3.50"
         }
       ],
-      total: "3.5"
+      total: "3.50"
+    };
+
+    const response = await request(app)
+      .post(postEndPoint)
+      .send(receiptData)
+      .expect(400);
+  });
+
+  // Future dates not allowed, should return 400
+  test('Rejects receipt with future dates', async () => {
+    const receiptData = {
+      retailer: "Target",
+      purchaseDate: "2094-12-31",
+      purchaseTime: "10:00",
+      items: [
+        {
+          shortDescription: "Apples",
+          price: "3.50"
+        }
+      ],
+      total: "3.50"
     };
 
     const response = await request(app)
@@ -319,7 +340,7 @@ describe('Test the receipt prcessing endpoint', () => {
           price: "3.50"
         }
       ],
-      total: "3.5"
+      total: "3.50"
     };
 
     const response = await request(app)
@@ -340,7 +361,7 @@ describe('Test the receipt prcessing endpoint', () => {
           price: "3000000000000000000000000000000000.00"
         }
       ],
-      total: "3.5"
+      total: "3.50"
     };
 
     const response = await request(app)

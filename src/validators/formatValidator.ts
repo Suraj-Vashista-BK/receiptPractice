@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { validate, ValidationError } from 'express-validation';
 import Joi from 'joi';
 
+// validate input to allow only certain formats
 const receiptSchema = Joi.object({
     retailer: Joi.string()
                  .pattern(/^[\w\s\-&]+$/)

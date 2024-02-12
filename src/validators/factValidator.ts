@@ -6,6 +6,10 @@ const factCheckMiddleware = (req: Request, res: Response, next: NextFunction) =>
 
     // Check if the purchase date is a valid date. Dates like 0000-00-00 , 2020-13-01, 2020-12-32 are not valid while their fromat is correct
     const date = new Date(purchaseDate);
+    const today = new Date();
+    if (date > today) {
+        return res.status(400).json({ error: 'Purchase date cannot be in the future' });
+    }
     const dateNum = date.getTime();
     if (!dateNum && dateNum !== 0 || date.toISOString().slice(0, 10) !== purchaseDate) {
         return res.status(400).json({ error: 'Purchase date is not a valid date' });
@@ -30,6 +34,14 @@ const factCheckMiddleware = (req: Request, res: Response, next: NextFunction) =>
             return res.status(400).json({ error: `Price for item "${item.shortDescription}" cannot be zero` });
         }
     }
+
+    // limit max items to 150
+
+    const maxItemsAllowed = 150;
+    if (items.length > maxItemsAllowed) {
+        return res.status(400).json({ error: `The number of items cannot exceed ${maxItemsAllowed}` });
+    }
+
     next();
 };
 
