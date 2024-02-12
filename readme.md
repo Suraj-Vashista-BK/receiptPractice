@@ -122,7 +122,7 @@ Testing has been performed using jest ( a javascript testing library). I have de
 Since the task was to build only a server, I have not created the UI assuming that fetch has some scripts to test.
 
 The following ways have been used and tested by me inorder to access this server:
-- Postman
+- Postman ( Sometimes there can be some latency in the first request sent my postman. This is an issue with postman and not the application ).
 - curl
 
 A sample curl command used
