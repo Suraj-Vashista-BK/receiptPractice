@@ -22,7 +22,13 @@ app.listen(port, () => {
 // Error handling middleware
 app.use(function(err: any, req: Request, res: Response, next: NextFunction) {
   if (err instanceof ValidationError) {
-    return res.status(400).json({ error: err.message + ", please re-check your input values."});
+    if(err.details.body){
+    const errorMessage = err.details.body[0].message;
+    return res.status(400).json({ error: errorMessage});
+    }
+    else{
+      return res.status(400).json({ error: err.message + ", please check the input data and try again."});
+    }
   }
   return res.status(500).json(err);
 });
