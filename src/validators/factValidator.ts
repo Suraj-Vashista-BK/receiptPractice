@@ -17,7 +17,7 @@ const factCheckMiddleware = (req: Request, res: Response, next: NextFunction) =>
         return res.status(400).json({ error: 'Total is invalid or too high' });
     }
     if (totalValue == 0){
-        return res.status(400).json({ error: 'Total is cannot be zero' });
+        return res.status(400).json({ error: 'Total cannot be zero' });
     }
 
     // check validity of each time price
