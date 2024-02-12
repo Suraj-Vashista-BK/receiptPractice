@@ -1,6 +1,4 @@
 # Receipt Processor Submission
-This repository contains the code pertaining to the challenge provided by fetch rewards for the backend engineer position.
-
 A receipt processor app server is implemented that performs only 2 tasks
 * processing a given receipt to calculate a score and assigning an ID to the receipt.
 * providing a score for a given receipt ID.
@@ -16,17 +14,24 @@ A receipt processor app server is implemented that performs only 2 tasks
 
 ## How to run
 
-Inorder to run this application, only `Docker` is the necessary pre-requisite.
+Inorder to run this application, only `Docker Desktop` is the necessary pre-requisite.
 
 The steps to follow are:
 * Start `Docker Desktop`
-* clone the respoitory using the command `git clone https://github.com/Suraj-Vashista-BK/ReceiptProcessor.git`
-* execute `cd ReceiptProcessor`. This should navigate to the root directory which contains the Dockerfile.
-* execute `docker-compose up` or `docker-compose up -d`
+* Execute the following commands one by one.
+  ```
+  git clone https://github.com/Suraj-Vashista-BK/ReceiptProcessor.git
+  cd ReceiptProcessor
+  docker-compose up
+  ```
 
 The application creates a container, installs necessary libraries, and conducts initial testing using Jest.
 
-Access the application at `http://localhost:3000/`, displaying "Fetch Coding Exercise!".
+Access the application at 
+```
+http://localhost:3000/
+```
+The home page will display "Fetch Coding Exercise!".
 
 ## Key Assumptions
 
@@ -47,7 +52,7 @@ This change is only done for retailer name field. Rest of the fields stricly fol
 
 ### 1. Endpoints
 
-The application exposes 2 endpoints
+The server exposes 2 endpoints
 
 #### Endpoint 1: Processing receipt
 
@@ -111,21 +116,21 @@ Validations of provided receipt details input is performed in 2 steps:
 
 ### 3. Testing
 
-Testing has been performed using jest ( a javascript testing library). I have designed the tests to check the following 3 areas
-* Input validation: Tests are written to make sure the validation function allows only the schema mentioned in api.yml file.
+Testing has been performed using jest ( a javascript testing library). I have designed the tests to check the following 3 areas:
+* Input validation: Tests are written to make sure the validation function allows only the schema mentioned in [api.yml](https://github.com/Suraj-Vashista-BK/ReceiptProcessor/blob/main/api.yml) file.
 * Score Validation: Tests are written to make sure that the given rules have been implemented properly and correct scores are assigned to receipts.
 * EndPoint Validation: Tests are written to make sure that server endpoints provides appropriate HTTP response codes and descriptions for all different types of inputs.
 
 
 ## Accessing the server
 
-Since the task was to build only a server, I have not created the UI assuming that fetch has some scripts to test.
+Since the task was to build only a server, I have not created the UI assuming that Fetch has some scripts to test.
 
-The following ways have been used and tested by me inorder to access this server:
+The following ways have been used and tested by me in order to access this server:
 - Postman ( Sometimes there can be some latency in the first request sent my postman. This is an issue with postman and not the application ).
 - curl
 
-A sample curl command used
+A sample curl command used:
 ```
 curl --location 'http://localhost:3000/receipts/dc33fe6a-a7c8-4e4a-b964-b694662d97d3/points' --data ''
 ```
