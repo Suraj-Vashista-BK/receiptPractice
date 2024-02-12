@@ -30,13 +30,13 @@ Access the application at `http://localhost:3000/`, displaying "Fetch Coding Exe
 
 ## Key Assumptions
 
-I have made some assumptions based on the schema provided in api.yml file.
+I have made some assumptions based on the schema provided in [api.yml](https://github.com/Suraj-Vashista-BK/ReceiptProcessor/blob/main/api.yml) file.
 
 For the retailer name, the pattern `^[\\w\\s\\-]+$` is used, which matches letters, numbers, spaces, and hyphens only. However, in the example provided, `M&M Corner Market` is mentioned as valid, even though it contains `&`, which should technically not be allowed.
 
 Considering that the testing scripts might contain this case, I made small arrangement to the regex to allow `&` additionally. No other special characters are allowed. Therefore, the retailer name regex allows letters, numbers, spaces, hyphens, and ampersands.
 
-This change is only done for retailer name field. Rest of the fields stricly follow the pattern mentioned in the api.yml elaborated below. 
+This change is only done for retailer name field. Rest of the fields stricly follow the pattern mentioned in [api.yml](https://github.com/Suraj-Vashista-BK/ReceiptProcessor/blob/main/api.yml) elaborated below. 
 * For date, the server only allows `yyyy-mm-dd`.
 * For time, the server only allows `hh:mm`
 * For prices and total, the server follows given regex `^\\d+\\.\\d{2}$` which matches strings that start with one or more digits, followed by a dot, and then exactly two digits, and nothing else.
@@ -56,7 +56,7 @@ The application exposes 2 endpoints
 * Payload: Receipt JSON
 * Response: JSON containing an id for the receipt.
 
-Takes in a JSON body containing the reciept details that follows the following schema mentioned in api.yml and a sample valid receipt is as shown below.
+Takes in a JSON body containing the reciept details that follows the following schema mentioned in [api.yml](https://github.com/Suraj-Vashista-BK/ReceiptProcessor/blob/main/api.yml) and a sample valid receipt is as shown below.
 
 ```json
 {
@@ -106,7 +106,7 @@ In case of an invalid receipt ID, we get the following response
 
 Validations of provided receipt details input is performed in 2 steps:
 * Typescript interfaces are used to ensure that each field is containing the right data type and no fields are missing.
-* For each valid data type field, pattern checks are conducted using regex. The allowed patterns are described in the api.yml components section and the application follows these patterns stricly. I have also explained all the expressions in detail under the Assumptions section.
+* For each valid data type field, pattern checks are conducted using regex. The allowed patterns are described in the [api.yml](https://github.com/Suraj-Vashista-BK/ReceiptProcessor/blob/main/api.yml) components section and the application follows these patterns stricly. I have also explained all the expressions in detail under the Assumptions section.
 
 
 ### 3. Testing
