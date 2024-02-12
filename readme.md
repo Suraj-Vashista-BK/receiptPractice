@@ -40,13 +40,65 @@ I have made some assumptions based on the schema provided in [api.yml](https://g
 
 For the retailer name, the pattern `^[\\w\\s\\-]+$` is used, which matches letters, numbers, spaces, and hyphens only. However, in the example provided, `M&M Corner Market` is mentioned as valid, even though it contains `&`, which should technically not be allowed.
 
-Considering that the testing scripts might contain this case, I made small arrangement to the regex to allow `&` additionally. No other special characters are allowed. Therefore, the retailer name regex allows letters, numbers, spaces, hyphens, and ampersands.
+Considering that the testing scripts might contain this case, I made a small arrangement to the regex to allow `&` additionally. No other special characters are allowed. Therefore, the retailer name regex `^[\\w\\s\\-&]+$` allows letters, numbers, spaces, hyphens, and ampersands.
 
-This change is only done for retailer name field. Rest of the fields stricly follow the pattern mentioned in [api.yml](https://github.com/Suraj-Vashista-BK/ReceiptProcessor/blob/main/api.yml) elaborated below. 
-* For date, the server only allows `yyyy-mm-dd`.
-* For time, the server only allows `hh:mm`
-* For prices and total, the server follows given regex `^\\d+\\.\\d{2}$` which matches strings that start with one or more digits, followed by a dot, and then exactly two digits, and nothing else.
-* Item description follows `^[\\w\\s\\-]+$` which matches letters, numbers, spaces and hyphens.
+
+## Corner Cases
+
+There can be a lot of corner cases for each input. The app covers a variety of corner cases with appropriate messages in response. For cases that dont have a dedicated message, the app gives a generic error message.
+
+Some checks the app does for each field are as follows (strictly based on api.yml):
+1. Retailer name:
+   - Must be a string.
+   - Cannot be empty.
+   - Can only contain letters, numbers, spaces, hyphens, and ampersands. This is done based on the pattern `^[\\w\\s\\-&]+$` given in api.yml file along with the assumption mentioned in the previous section.
+   - It is a required field
+  
+2. purchaseDate:
+   - Must be a string.
+   - Cannot be empty.
+   - Must be in format `YYYY-MM-DD` with valid values. Values like 2020-00-00, 2024-02-31 etc are not allowed.
+   - It is a required field.
+   - Cannot be a future date.
+
+3. purchaseTime:
+   - Must be a string.
+   - Cannot be empty.
+   - Must be in format `HH:MM` (24 Hour Clock) with valid values. Values like 24:00, 99:99 etc are not allowed.
+   - It is a required field.
+
+4. Items:
+   - Must be an array containing shortDescription and price.
+   - Cannot be empty.
+   - Must have a minimum of 1 field.
+   - It is a required field.
+
+5. shortDescription:
+   - Must be a string.
+   - Cannot be empty.
+   - Can only contain letters, numbers, spaces, and hyphens. This is done based on the pattern `^[\\w\\s\\-]+$` given in api.yml file.
+   - It is a required field.
+
+6. price:
+   - Must be a string ( following the api.yml).
+   - Cannot be empty or NaN.
+   - Must be decimal number with 2 decimal places. This restriction is based on the pattern `^\\d+\\.\\d{2}$` given in api.yml file.
+   - It is a required field.
+   - Cannot be negative.
+   - Cannot be zero.
+   - Cannot be more than `10e10`. This is a design choice to avoid unrealistic price values.
+   - All the prices must add up to the total filed with an allowed error of 0.01
+
+7. total:
+   - Must be a string ( following the api.yml).
+   - Cannot be empty or NaN.
+   - Must be decimal number with 2 decimal places. This restriction is based on the pattern `^\\d+\\.\\d{2}$` given in api.yml file.
+   - It is a required field.
+   - Cannot be negative.
+   - Cannot be zero.
+   - Cannot be more than `10e10`. This is a design choice to avoid unrealistic total values.
+
+*Note that the input JSON field names should not vary in spelling.*
 
 
 ## Application Details
@@ -118,22 +170,43 @@ Validations of provided receipt details input is performed in 2 steps:
 ### 3. Testing
 
 Testing has been performed using jest ( a javascript testing library). I have designed the tests to check the following 3 areas:
-* Input validation: Tests are written to make sure the validation function allows only the schema mentioned in [api.yml](https://github.com/Suraj-Vashista-BK/ReceiptProcessor/blob/main/api.yml) file.
+
 * Score Validation: Tests are written to make sure that the given rules have been implemented properly and correct scores are assigned to receipts.
 * EndPoint Validation: Tests are written to make sure that server endpoints provides appropriate HTTP response codes and descriptions for all different types of inputs.
 
+A total of 24 tests are written that are auto executed upto docker build.
+
+### 4. Logs
+
+Considering this to be a small application, for simplicity I have only logged the details of the HTTP request to the console using a npm library called morgan.
 
 ## Accessing the server
 
 Since the task was to build only a server, I have not created the UI assuming that Fetch has some scripts to test.
 
 The following ways have been used and tested by me in order to access this server:
-- Postman ( Sometimes there can be some latency in the first request sent my postman. This is an issue with postman and not the application ).
+- Postman ( Sometimes there can be some latency in the first request sent via postman. This is an issue with postman and not the application ).
 - curl
 
-A sample curl command used:
+Sample curl commands used:
+
+GET REQUEST:
 ```
 curl --location 'http://localhost:3000/receipts/dc33fe6a-a7c8-4e4a-b964-b694662d97d3/points' --data ''
 ```
-
+POST REQUEST:
+```
+curl --location 'http://localhost:3000/receipts/process' --header 'Content-Type: application/json' \
+--data '{
+  "retailer": "M&M Corner Market",
+  "purchaseDate": "2022-01-21",
+  "purchaseTime": "16:01",
+  "items": [
+    {
+      "shortDescription": "Gatorade",
+      "price": "1.00"
+    }
+  ],
+  "total": "1.00"
+}'```
 

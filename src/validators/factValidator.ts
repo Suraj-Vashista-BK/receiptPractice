@@ -25,14 +25,21 @@ const factCheckMiddleware = (req: Request, res: Response, next: NextFunction) =>
     }
 
     // check validity of each time price
+    var priceSum = 0;
     for (const item of items) {
         const priceValue = parseFloat(item.price);
+        priceSum += priceValue;
         if (isNaN(priceValue) || priceValue > 10e10) {
             return res.status(400).json({ error: `Price for item "${item.shortDescription}" is invalid or too high` });
         }
         if(priceValue == 0){
             return res.status(400).json({ error: `Price for item "${item.shortDescription}" cannot be zero` });
         }
+    }
+
+    // check if the total is the sum of the prices of the items with error for upto 0.01
+    if (Math.abs(totalValue - priceSum) > 0.01) {
+        return res.status(400).json({ error: 'Total is not the sum of the prices of the items' });
     }
 
     // limit max items to 150
