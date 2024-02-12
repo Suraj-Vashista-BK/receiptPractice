@@ -1,5 +1,5 @@
 
-// Define the types for the data we are working with. This will help us catch errors early and make our code more readable.
+// Define the types for the data we are working with. Used for static typechecking
 
 export interface Receipt {
   retailer: string;

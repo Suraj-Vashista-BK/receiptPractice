@@ -19,7 +19,7 @@ app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
-// Error handling middleware
+// Error handling for input validation. All knows errors provide custom messages. Unknown errors provide a generic message.
 app.use(function(err: any, req: Request, res: Response, next: NextFunction) {
   if (err instanceof ValidationError) {
     if(err.details.body){

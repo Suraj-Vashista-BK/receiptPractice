@@ -15,7 +15,6 @@ export const routes = (app: Application, myCache: Cache | any) => {
     router.post("/receipts/process",validateReceiptMiddleware,factCheckMiddleware,createReceiptHandler(myCache));
     // get receipt
     router.get("/receipts/:id/points",getReceiptHandler(myCache));
-
-
+    
     return router;
 }

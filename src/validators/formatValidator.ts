@@ -5,7 +5,7 @@ import Joi from 'joi';
 // validate input to allow only certain formats
 const receiptSchema = Joi.object({
     retailer: Joi.string()
-                 .pattern(/^[\w\s\-&]+$/)
+                 .pattern(/^[\w\s\-&]+$/) // only letters, numbers, spaces, hyphens, and ampersands
                  .required()
                  .messages({
                      'string.base': `retailer should be a type of 'string'`,
@@ -14,15 +14,15 @@ const receiptSchema = Joi.object({
                      'any.required': `retailer is a required field`
                  }),
     purchaseDate: Joi.string()
-                    .pattern(/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/)
+                    .pattern(/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/) // YYYY-MM-DD
                     .required()
                     .messages({
-                        'string.pattern.base': `purchaseDate should be in fromat YYYY-MM-DD with valid values`,
+                        'string.pattern.base': `purchaseDate should be in format YYYY-MM-DD with valid values`,
                         'string.empty': `purchaseDate cannot be an empty field`,
                         'any.required': `purchaseDate is a required field`
                     }),
     purchaseTime: Joi.string()
-                     .pattern(/^([01]\d|2[0-3]):[0-5]\d$/)
+                     .pattern(/^([01]\d|2[0-3]):[0-5]\d$/) // HH:MM (24-hour clock)
                      .required()
                      .messages({
                          'string.pattern.base': `purchaseTime should be in HH:MM format (24-hour clock)`,
@@ -30,7 +30,7 @@ const receiptSchema = Joi.object({
                          'any.required': `purchaseTime is a required field`
                      }),
     total: Joi.string()
-              .pattern(/^\d+\.\d{2}$/)
+              .pattern(/^\d+\.\d{2}$/) // decimal number with 2 decimal places
               .required()
               .messages({
                   'string.pattern.base': `total should be a decimal number with 2 decimal places`,
@@ -40,7 +40,7 @@ const receiptSchema = Joi.object({
     items: Joi.array()
               .items(Joi.object({
                   shortDescription: Joi.string()
-                                       .pattern(/^[\w\s\-&]+$/)
+                                       .pattern(/^[\w\s\-&]+$/) // only letters, numbers, spaces, and hyphens
                                        .required()
                                        .messages({
                                            'string.pattern.base': `shortDescription can only contain letters, numbers, spaces, and hyphens`,
@@ -48,7 +48,7 @@ const receiptSchema = Joi.object({
                                            'string.empty': `shortDescription cannot be an empty field`,
                                        }),
                   price: Joi.string()
-                            .pattern(/^\d+\.\d{2}$/)
+                            .pattern(/^\d+\.\d{2}$/) // decimal number with 2 decimal places
                             .required()
                             .messages({
                                 'string.pattern.base': `price should be a decimal number with 2 decimal places`,
@@ -65,7 +65,7 @@ const receiptSchema = Joi.object({
               }),
 }).required();
 
-// First Layer of Middleware checks for input format
+// First Layer of Middleware checks for validity of input format
 const validateReceiptMiddleware = validate({ body: receiptSchema }, {}, {});
 
 export {validateReceiptMiddleware};

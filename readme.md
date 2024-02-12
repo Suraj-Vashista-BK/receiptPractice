@@ -22,6 +22,7 @@ The steps to follow are:
   ```
   git clone https://github.com/Suraj-Vashista-BK/ReceiptProcessor.git
   cd ReceiptProcessor
+  docker-compose build
   docker-compose up
   ```
 
