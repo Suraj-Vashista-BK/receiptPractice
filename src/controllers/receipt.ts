@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import { Cache, Receipt } from "../types/type";
-import { validateReceipt } from "../validators/validator";
+//import { validateReceipt } from "../validators/validator";
 
 
 // function to calculate the score of the receipt
@@ -68,10 +68,10 @@ const createReceiptHandler = (myCache: Cache) => async (req: Request, res: Respo
             return res.status(400).json({ error: 'The receipt is invalid' });
            
         }
-        const isValid = await validateReceipt(receiptData);
-        if (!isValid) {
-            return res.status(400).json({ error: 'The receipt is invalid' });
-        }
+        //const isValid = await validateReceipt(receiptData);
+        // if (!isValid) {
+        //     return res.status(400).json({ error: 'The receipt is invalid' });
+        // }
         
         // fetch scores
         const score = calculateReceiptScore(receiptData);

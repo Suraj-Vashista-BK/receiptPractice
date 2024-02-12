@@ -2,7 +2,7 @@ import request from 'supertest';
 import { app } from '../index';
 
 
-// This test suit mainly focuses on testing the endpoints provided in the clients perspective
+// This test suit mainly focuses on testing the endpoints provided in the clients perspective with different inputs.
 describe('Test the receipt prcessing endpoint', () => {
   // TEST THE CREATION OF A RECEIPT
   const postEndPoint = '/receipts/process';
@@ -169,6 +169,226 @@ describe('Test the receipt prcessing endpoint', () => {
     await request(app)
       .get('/receipts/123/points')
       .expect(404);
+  });
+
+
+  // TEST THE VALIDATION OF THE RECEIPT
+
+
+  // input satisfies all the rules
+  it('should process a valid receipt and return an ID', async () => {
+    const receiptData: any = {
+      retailer: "Target",
+      purchaseDate: "2022-01-01",
+      purchaseTime: "13:01",
+      items: [
+        { shortDescription: "Mountain Dew 12PK", price: "6.49" },
+        { shortDescription: "Emils Cheese Pizza", price: "12.25" }
+      ],
+      total: "18.74"
+    };
+
+    const response = await request(app)
+      .post(postEndPoint)
+      .send(receiptData)
+      .expect(200);
+    expect(response.body).toHaveProperty('id');
+  });
+
+  // according to the rules, the retailer name should only contain letters, numbers, spaces, hyphens, and ampersands
+  test('Rejects receipt with invalid retailer name', async () => {
+    const receiptData = {
+      retailer: "M**(*!M Corner Market",
+      purchaseDate: "2022-05-15",
+      purchaseTime: "14:30",
+      items: [
+        {
+          shortDescription: "Mountain Dew 12PK",
+          price: "5.99"
+        },
+        {
+          shortDescription: "Lays Chips",
+          price: "2.50"
+        }
+      ],
+      total: "8.49"
+    };
+
+    const response = await request(app)
+      .post(postEndPoint)
+      .send(receiptData)
+      .expect(400);
+  });
+
+  // according to the rules, the date should be in the format of "yyyy-mm-dd"
+  test('Rejects receipt with invalid date format', async () => {
+    const receiptData = {
+      retailer: "Target",
+      purchaseDate: "05-15-2022",
+      purchaseTime: "10:00",
+      items: [
+        {
+          shortDescription: "Apples",
+          price: "3.50"
+        }
+      ],
+      total: "3.50"
+    };
+
+    const response = await request(app)
+      .post(postEndPoint)
+      .send(receiptData)
+      .expect(400);
+  });
+
+  // according to the rules, the time should be in the format of "hh:mm"
+  test('Rejects receipt with invalid time format', async () => {
+    const receiptData = {
+      retailer: "Target",
+      purchaseDate: "2022-05-15",
+      purchaseTime: "10:00 AM", // Incorrect time format
+      items: [
+        {
+          shortDescription: "Apples",
+          price: "3.50"
+        }
+      ],
+      total: "3.50"
+    };
+
+    const response = await request(app)
+      .post(postEndPoint)
+      .send(receiptData)
+      .expect(400);
+  });
+
+  // according to the rules, the total should contain only 2 decimal places
+  test('Rejects receipt without invalid total', async () => {
+    const receiptData = {
+      retailer: "Target",
+      purchaseDate: "2022-05-15",
+      purchaseTime: "10:00",
+      items: [
+        {
+          shortDescription: "Apples",
+          price: "3.50"
+        }
+      ],
+      total: "3.5"
+    };
+
+    const response = await request(app)
+      .post(postEndPoint)
+      .send(receiptData)
+      .expect(400);
+  });
+
+
+  // TESTING THE FACTUAL VALUES IN A VALID RECEIPT
+
+  // logically incorrect date, should return 400
+  test('Rejects receipt with invalid date that follow the initial format', async () => {
+    const receiptData = {
+      retailer: "Target",
+      purchaseDate: "2022-02-30",
+      purchaseTime: "10:00",
+      items: [
+        {
+          shortDescription: "Apples",
+          price: "3.50"
+        }
+      ],
+      total: "3.5"
+    };
+
+    const response = await request(app)
+      .post(postEndPoint)
+      .send(receiptData)
+      .expect(400);
+  });
+
+  // logically incorrect time, should return 400
+  test('Rejects receipt with logically incorrect time', async () => {
+    const receiptData = {
+      retailer: "Target",
+      purchaseDate: "2022-13-99",
+      purchaseTime: "99:99",
+      items: [
+        {
+          shortDescription: "Apples",
+          price: "3.50"
+        }
+      ],
+      total: "3.5"
+    };
+
+    const response = await request(app)
+      .post(postEndPoint)
+      .send(receiptData)
+      .expect(400);
+  });
+
+  // price value is too high, should return 400
+  test('Rejects receipt with unrealistically high price value', async () => {
+    const receiptData = {
+      retailer: "Target",
+      purchaseDate: "2022-13-99",
+      purchaseTime: "99:99",
+      items: [
+        {
+          shortDescription: "Apples",
+          price: "3000000000000000000000000000000000.00"
+        }
+      ],
+      total: "3.5"
+    };
+
+    const response = await request(app)
+      .post(postEndPoint)
+      .send(receiptData)
+      .expect(400);
+  });
+
+  // total value is too high, should return 400
+  test('Rejects receipt with unrealistically high total value', async () => {
+    const receiptData = {
+      retailer: "Target",
+      purchaseDate: "2022-13-99",
+      purchaseTime: "99:99",
+      items: [
+        {
+          shortDescription: "Apples",
+          price: "30.00"
+        }
+      ],
+      total: "30009090909090909090.50"
+    };
+
+    const response = await request(app)
+      .post(postEndPoint)
+      .send(receiptData)
+      .expect(400);
+  });
+
+  // total value cannot be 0, should return 400
+  test('Rejects receipt with total value 0', async () => {
+    const receiptData = {
+      retailer: "Target",
+      purchaseDate: "2022-13-99",
+      purchaseTime: "99:99",
+      items: [
+        {
+          shortDescription: "Apples",
+          price: "30.00"
+        }
+      ],
+      total: "0.00"
+    };
+
+    const response = await request(app)
+      .post(postEndPoint)
+      .send(receiptData)
+      .expect(400);
   });
 
 });
