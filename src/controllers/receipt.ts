@@ -52,8 +52,7 @@ const getReceiptHandler = (myCache: Cache) => (req: Request, res: Response) => {
     try{
         var id = req.params.id;
         if(!myCache[id]){
-            res.status(404).send("No receipt found for that id");
-            return;
+            return res.status(400).json({ error: "No receipt found for that id" });
         }
         res.status(200).json({"points":myCache[id]});
     }
