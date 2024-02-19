@@ -74,7 +74,6 @@ const createReceiptHandler = (myCache: Cache) => async (req: Request, res: Respo
         // fetch scores
         const score = calculateReceiptScore(receiptData);
         const receiptId = uuidv4();
-        // cache the values
         myCache[receiptId] = score;
     
         res.status(200).json({ id: receiptId });
